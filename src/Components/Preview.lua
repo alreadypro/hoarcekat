@@ -20,10 +20,10 @@ function Preview:init()
 	self.currentPreview = nil
 	self.errorID = 0
 
-	local display = Instance.new("ScreenGui")
-	display.Name = "HoarcekatDisplay"
-	display.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-	self.display = display
+	-- local display = Instance.new("ScreenGui")
+	-- display.Name = "HoarcekatDisplay"
+	-- display.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	self.display = CoreGui -- display
 
 	self.expand = false
 
@@ -35,7 +35,7 @@ function Preview:init()
 
 	self.expandSelection = function()
 		self.expand = not self.expand
-		self.display.Parent = self.expand and CoreGui or nil
+		-- self.display.Parent = self.expand and CoreGui or nil
 
 		self:updateDisplay()
 	end
@@ -78,11 +78,14 @@ function Preview:updateDisplay()
 	if not target then
 		return
 	end
-	if self.expand then
-		target.Parent = self.display
-	else
-		target.Parent = self.rootRef:getValue()
-	end
+
+	target.Parent = self.display
+
+	-- if self.expand then
+	-- 	target.Parent = self.display
+	-- else
+	-- 	target.Parent = self.rootRef:getValue()
+	-- end
 end
 
 function Preview:refreshPreview()
@@ -175,14 +178,16 @@ function Preview:prepareState(selectedStory)
 		return "Error requiring story: " .. result, nil
 	end
 
-	state.target = Instance.new("Frame")
-	state.target.Name = "Preview"
-	state.target.BackgroundTransparency = 1
-	state.target.Size = UDim2.fromScale(1, 1)
+	-- state.target = Instance.new("Frame")
+	-- state.target.Name = "Preview"
+	-- state.target.BackgroundTransparency = 1
+	-- state.target.Size = UDim2.fromScale(1, 1)
 
-	local execOk, cleanup = xpcall(function()
-		return result(state.target)
+	local execOk, cleanup, componentName = xpcall(function()
+		return result(CoreGui)
 	end, debug.traceback)
+
+	state.target = CoreGui:FindFirstChild(componentName) or CoreGui
 
 	if not execOk then
 		state:destroy()
